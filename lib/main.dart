@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -29,11 +30,18 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  void subscribe() {
+    final coinPriceStream = FirebaseFirestore.instance
+        .collection('coinPrices')
+        .doc("latest")
+        .collection("coins")
+        .snapshots();
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
+    coinPriceStream.listen((querySnapshot) {
+      querySnapshot.docs.map((document) {
+        final data = document.data();
+        print(data);
+      }).toList();
     });
   }
 
@@ -44,31 +52,15 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Container(
-          constraints: BoxConstraints(maxWidth: 600),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const SelectableText(
-                'You have pushed the button this many times:',
-              ),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headline4,
-              ),
-              Text('Name'),
-              TextField(),
-              Text('Email'),
-              TextField(),
-            ],
-          ),
+        child: Column(
+          children: [
+            TextButton(
+              child: Text("subscribe"),
+              onPressed:subscribe,
+            )
+          ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

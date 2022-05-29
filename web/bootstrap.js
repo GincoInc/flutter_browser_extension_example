@@ -1,21 +1,3 @@
-// var serviceWorkerVersion = null;
-
-// window.addEventListener("load", function (ev) {
-//   // Download main.dart.js
-//   _flutter.loader
-//     .loadEntrypoint({
-//       serviceWorker: {
-//         serviceWorkerVersion: serviceWorkerVersion,
-//       },
-//     })
-//     .then(function (engineInitializer) {
-//       return engineInitializer.initializeEngine();
-//     })
-//     .then(function (appRunner) {
-//       return appRunner.runApp();
-//     });
-// });
-
 const firebaseConfig = {
   apiKey: "AIzaSyC2fwBWZv4-SlhzkS-7o7y3s1S0bxKMJxs",
   authDomain: "ginco-personal-wallet-dev.firebaseapp.com",

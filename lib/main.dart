@@ -1,11 +1,11 @@
 // ignore_for_file: avoid_print, prefer_interpolation_to_compose_strings, prefer_const_constructors
 
 import 'dart:math';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
 import 'package:flutter/material.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:bip39/bip39.dart' as bip39;
+import 'package:http/http.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,10 +36,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  double? balance;
+  EthPrivateKey? privateKey;
+  EthPrivateKey? credentials;
+  final apiUrl =
+      "https://rinkeby.infura.io/v3/b8afb8ea41da4395a9374aa0641e2165";
+
   @override
   void initState() {
     super.initState();
     web3dartExample();
+    getBalnce();
   }
 
   void web3dartExample() async {
@@ -61,6 +68,39 @@ class _MyHomePageState extends State<MyHomePage> {
     Wallet wallet = Wallet.createNew(credentials, "password", rng);
     print(wallet.toJson());
     print('address: ' + wallet.privateKey.address.hex);
+    setState(() {
+      privateKey = wallet.privateKey;
+      this.credentials = credentials;
+    });
+  }
+
+  Future<void> getBalnce() async {
+    if (privateKey == null) return;
+    final httpClient = Client();
+    final ethClient = Web3Client(apiUrl, httpClient);
+    final address = EthereumAddress.fromHex(privateKey!.address.hex);
+
+    EtherAmount balance = await ethClient.getBalance(address);
+    setState(() {
+      this.balance = balance.getValueInUnit(EtherUnit.ether);
+    });
+  }
+
+  Future<void> sendTransaction() async {
+    if (privateKey == null) return;
+    final httpClient = Client();
+    final ethClient = Web3Client(apiUrl, httpClient);
+    await ethClient.sendTransaction(
+      privateKey!,
+      Transaction(
+        to: EthereumAddress.fromHex(
+          '0x0e75a7a5818a6517e2dc583E72de82F92F00bd06',
+        ),
+        gasPrice: EtherAmount.inWei(BigInt.one),
+        maxGas: 100000,
+        value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 1),
+      ),
+    );
   }
 
   void subscribe() {
@@ -90,7 +130,14 @@ class _MyHomePageState extends State<MyHomePage> {
             TextButton(
               onPressed: subscribe,
               child: Text("subscribe"),
-            )
+            ),
+            const SizedBox(height: 16),
+            Text("${balance ?? 0} eth"),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: sendTransaction,
+              child: Text("SendTransaction"),
+            ),
           ],
         ),
       ),

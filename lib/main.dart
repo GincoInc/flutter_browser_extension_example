@@ -40,8 +40,10 @@ class _MyHomePageState extends State<MyHomePage> {
   double? balance;
   EthPrivateKey? privateKey;
   EthPrivateKey? credentials;
+  // final apiUrl =
+  //     "https://rinkeby.infura.io/v3/b8afb8ea41da4395a9374aa0641e2165";
   final apiUrl =
-      "https://rinkeby.infura.io/v3/b8afb8ea41da4395a9374aa0641e2165";
+      'https://ropsten.infura.io/v3/afb1ae020fa14826bbb53cde949f70ec';
 
   @override
   void initState() {
@@ -110,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // 1000000gwei == 0.001eth
         value: EtherAmount.fromUnitAndValue(EtherUnit.gwei, 1000000),
       ),
-      chainId: 4,
+      chainId: 3,
     );
     print("transaction hash: " + hash);
   }
